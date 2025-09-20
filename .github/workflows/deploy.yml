@@ -24,6 +24,9 @@ jobs:
         working-directory: ./frontend
       - run: npm run build
         working-directory: ./frontend
+        env:
+          VITE_WS_URL: ${{ secrets.VITE_WS_URL }}
+          VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./frontend/dist  # or your build output directory

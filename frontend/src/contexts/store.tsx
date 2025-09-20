@@ -16,11 +16,7 @@ import { ScheduleItem, Store, StoreActions, SYSTEM_STATUS } from '../types';
 import { ToastProvider } from './toast';
 
 const ws = createReconnectingWS(
-  `${
-    import.meta.env.PROD
-      ? `ws://${window.location.host}/`
-      : import.meta.env.VITE_WS_URL
-  }ws`,
+  `${import.meta.env.VITE_WS_URL}ws`,
 );
 const wsState = createWSState(ws);
 
