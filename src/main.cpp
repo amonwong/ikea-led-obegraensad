@@ -38,6 +38,8 @@
 #include "plugins/BigClockPlugin.h"
 #include "plugins/ClockPlugin.h"
 #include "plugins/WeatherPlugin.h"
+#include "plugins/GhostClockPlugin.h"
+#include "plugins/GhostPlugin.h"
 #endif
 
 #include "asyncwebserver.h"
@@ -176,6 +178,8 @@ void baseSetup()
   pluginManager.addPlugin(new AnimationPlugin());
   pluginManager.addPlugin(new DDPPlugin());
   pluginManager.addPlugin(new ArtNetPlugin());
+  pluginManager.addPlugin(new GhostClockPlugin());
+  pluginManager.addPlugin(new GhostPlugin());
 #endif
 
   pluginManager.init();
