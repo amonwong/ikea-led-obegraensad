@@ -44,6 +44,7 @@
 
 #include "asyncwebserver.h"
 #include "messages.h"
+#include "reactions.h"
 #include "ota.h"
 #include "screen.h"
 #include "secrets.h"
@@ -241,6 +242,9 @@ void loop()
 #if !defined(ESP32) && !defined(ESP8266)
   pluginManager.runActivePlugin();
 #endif
+
+  // plays a requested reaction; pauses the active mode while it runs
+  ReactionPlayer.update();
 
   if (currentStatus == NONE)
   {

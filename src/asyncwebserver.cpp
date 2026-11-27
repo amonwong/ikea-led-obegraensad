@@ -20,6 +20,9 @@ void initWebServer()
   server.on("/api/message", HTTP_GET, handleMessage);
   server.on("/api/removemessage", HTTP_GET, handleMessageRemove);
 
+  // Built-in reactions: /api/reaction?name=x (no name lists them)
+  server.on("/api/reaction", HTTP_GET, handleReaction);
+
   server.on("/api/info", HTTP_GET, handleGetInfo);
 
   // Handle API request to set an active plugin by ID
