@@ -38,8 +38,8 @@ jobs:
           #define WIFI_SSID "WifiForIkeaLamp"
           #define WIFI_PASSWORD "WifiPasswordForIkeaLamp"
           #endif
-          #define OTA_USERNAME "admin"
-          #define OTA_PASSWORD "password"
+          #define OTA_USERNAME "${{ secrets.OTA_USERNAME || 'admin' }}"
+          #define OTA_PASSWORD "${{ secrets.OTA_PASSWORD || 'password' }}"
           EOL
 
       - name: Install dependencies
@@ -101,8 +101,8 @@ jobs:
           #define WIFI_SSID "WifiForIkeaLamp"
           #define WIFI_PASSWORD "WifiPasswordForIkeaLamp"
           #endif
-          #define OTA_USERNAME "admin"
-          #define OTA_PASSWORD "password"
+          #define OTA_USERNAME "${{ secrets.OTA_USERNAME || 'admin' }}"
+          #define OTA_PASSWORD "${{ secrets.OTA_PASSWORD || 'password' }}"
           EOL
 
       - name: Install dependencies

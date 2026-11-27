@@ -38,10 +38,13 @@
 #include "plugins/BigClockPlugin.h"
 #include "plugins/ClockPlugin.h"
 #include "plugins/WeatherPlugin.h"
+#include "plugins/GhostClockPlugin.h"
+#include "plugins/GhostPlugin.h"
 #endif
 
 #include "asyncwebserver.h"
 #include "messages.h"
+#include "reactions.h"
 #include "ota.h"
 #include "screen.h"
 #include "secrets.h"
@@ -176,6 +179,8 @@ void baseSetup()
   pluginManager.addPlugin(new AnimationPlugin());
   pluginManager.addPlugin(new DDPPlugin());
   pluginManager.addPlugin(new ArtNetPlugin());
+  pluginManager.addPlugin(new GhostClockPlugin());
+  pluginManager.addPlugin(new GhostPlugin());
 #endif
 
   pluginManager.init();
@@ -237,6 +242,9 @@ void loop()
 #if !defined(ESP32) && !defined(ESP8266)
   pluginManager.runActivePlugin();
 #endif
+
+  // plays a requested reaction; pauses the active mode while it runs
+  ReactionPlayer.update();
 
   if (currentStatus == NONE)
   {

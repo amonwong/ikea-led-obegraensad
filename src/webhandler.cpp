@@ -1,9 +1,10 @@
 #include "webhandler.h"
 #include "messages.h"
+#include "reactions.h"
 #include "scheduler.h"
 #include "websocket.h"
 
-// http://your-server/message?text=Hello&repeat=3&id=42&graph=1,2,3,4
+// http://your-server/message?text=Hello&repeat=3&id=42&graph=1,2,3,4&big=1
 void handleMessage(AsyncWebServerRequest *request)
 {
     std::string text = request->arg("text").c_str();
@@ -12,6 +13,7 @@ void handleMessage(AsyncWebServerRequest *request)
     int delay = request->arg("delay").toInt();
     int miny = request->arg("miny").toInt();
     int maxy = request->arg("maxy").toInt();
+    bool big = request->arg("big") == "1"; // giant double-size text
 
     if (delay <= 0)
     {
@@ -36,7 +38,7 @@ void handleMessage(AsyncWebServerRequest *request)
     }
 
     // Add the message
-    Messages.add(text, repeat, id, delay, graph, miny, maxy);
+    Messages.add(text, repeat, id, delay, graph, miny, maxy, big);
 
     // JSON response
     StaticJsonDocument<256> jsonResponse;
@@ -61,6 +63,49 @@ void handleMessageRemove(AsyncWebServerRequest *request)
     String output;
     serializeJson(jsonResponse, output);
     request->send(200, "application/json", output);
+}
+
+// GET /api/reaction?name=x  plays a built-in reaction, then returns to the
+// running mode. Without a name it lists the available reactions.
+void handleReaction(AsyncWebServerRequest *request)
+{
+    StaticJsonDocument<512> jsonResponse;
+    String output;
+
+    if (!request->hasArg("name"))
+    {
+        JsonArray names = jsonResponse.createNestedArray("reactions");
+        for (uint8_t i = 0; i < ReactionPlayer.count(); i++)
+        {
+            names.add(ReactionPlayer.nameAt(i));
+        }
+        serializeJson(jsonResponse, output);
+        request->send(200, "application/json", output);
+        return;
+    }
+
+    int result = ReactionPlayer.request(request->arg("name").c_str());
+    if (result == 1)
+    {
+        jsonResponse["status"] = "success";
+        jsonResponse["message"] = "Reaction queued";
+        serializeJson(jsonResponse, output);
+        request->send(200, "application/json", output);
+    }
+    else if (result == -1)
+    {
+        jsonResponse["status"] = "error";
+        jsonResponse["message"] = "A reaction is already playing";
+        serializeJson(jsonResponse, output);
+        request->send(409, "application/json", output);
+    }
+    else
+    {
+        jsonResponse["status"] = "error";
+        jsonResponse["message"] = "Unknown reaction";
+        serializeJson(jsonResponse, output);
+        request->send(404, "application/json", output);
+    }
 }
 
 void handleSetPlugin(AsyncWebServerRequest *request)
