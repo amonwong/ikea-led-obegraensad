@@ -8,7 +8,7 @@ Messages_ &Messages_::getInstance()
 }
 
 void Messages_::add(std::string text, int repeat, int id, int delay,
-                    std::vector<int> graph, int miny, int maxy)
+                    std::vector<int> graph, int miny, int maxy, bool big)
 {
   // First remove any existing message with same id
   remove(id);
@@ -24,6 +24,7 @@ void Messages_::add(std::string text, int repeat, int id, int delay,
     msg->graph = graph;
     msg->miny = miny;
     msg->maxy = maxy;
+    msg->big = big;
 
     activeMessages.push_back(msg);
     previousMinute = -1; // Force immediate display
@@ -58,7 +59,12 @@ void Messages_::scroll()
 
     // Print text and graph for the message
     if (msg->text.length() > 0)
-      Screen.scrollText(msg->text.c_str(), msg->delay);
+    {
+      if (msg->big)
+        Screen.scrollTextBig(msg->text.c_str(), msg->delay);
+      else
+        Screen.scrollText(msg->text.c_str(), msg->delay);
+    }
     if (msg->graph.size() > 0)
       Screen.scrollGraph(msg->graph, msg->miny, msg->maxy, msg->delay);
 

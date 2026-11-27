@@ -399,6 +399,66 @@ void Screen_::scrollText(std::string text, int delayTime, uint8_t brightness, ui
   }
 }
 
+void Screen_::scrollTextBig(std::string text, int delayTime, uint8_t brightness)
+{
+  const font &currentFont = fonts[0];
+  const int scale = 2;
+  const int charWidth = currentFont.sizeX * scale;
+  const int step = charWidth + scale; // character plus a two-pixel gap
+  const int top = (ROWS - currentFont.sizeY * scale) / 2;
+
+  int charCount = 0;
+  for (std::size_t strPos = 0; strPos < text.length(); strPos++)
+  {
+    if (text[strPos] != 195)
+      charCount++;
+  }
+
+  int textWidth = charCount * step;
+
+  for (int i = -COLS; i < textWidth; i++)
+  {
+    clear();
+
+    int drawn = 0;
+    for (std::size_t strPos = 0; strPos < text.length(); strPos++)
+    {
+      if (text[strPos] == 195)
+        continue; // skip the unicode lead byte, as scrollText does
+
+      int xPos = drawn * step - i;
+      drawn++;
+
+      if (xPos <= -charWidth || xPos >= COLS)
+        continue;
+
+      uint8_t currentChar = (((text[strPos] - currentFont.offset) < (int)currentFont.data.size()) && (text[strPos] >= currentFont.offset)) ? text[strPos] : currentFont.offset;
+      std::vector<int> bits = readBytes(currentFont.data[currentChar - currentFont.offset]);
+
+      for (int row = 0; row < currentFont.sizeY; row++)
+      {
+        for (int col = 0; col < currentFont.sizeX; col++)
+        {
+          if (!bits[row * 8 + col])
+            continue;
+          for (int dy = 0; dy < scale; dy++)
+          {
+            for (int dx = 0; dx < scale; dx++)
+            {
+              int px = xPos + col * scale + dx;
+              int py = top + row * scale + dy;
+              if (px >= 0 && px < COLS && py >= 0 && py < ROWS)
+                setPixel(px, py, 1, brightness);
+            }
+          }
+        }
+      }
+    }
+
+    delay(delayTime);
+  }
+}
+
 void Screen_::scrollGraph(std::vector<int> graph, int miny, int maxy, int delayTime, uint8_t brightness)
 {
   if (graph.size() <= 0)

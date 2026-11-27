@@ -4,7 +4,7 @@
 #include "scheduler.h"
 #include "websocket.h"
 
-// http://your-server/message?text=Hello&repeat=3&id=42&graph=1,2,3,4
+// http://your-server/message?text=Hello&repeat=3&id=42&graph=1,2,3,4&big=1
 void handleMessage(AsyncWebServerRequest *request)
 {
     std::string text = request->arg("text").c_str();
@@ -13,6 +13,7 @@ void handleMessage(AsyncWebServerRequest *request)
     int delay = request->arg("delay").toInt();
     int miny = request->arg("miny").toInt();
     int maxy = request->arg("maxy").toInt();
+    bool big = request->arg("big") == "1"; // giant double-size text
 
     if (delay <= 0)
     {
@@ -37,7 +38,7 @@ void handleMessage(AsyncWebServerRequest *request)
     }
 
     // Add the message
-    Messages.add(text, repeat, id, delay, graph, miny, maxy);
+    Messages.add(text, repeat, id, delay, graph, miny, maxy, big);
 
     // JSON response
     StaticJsonDocument<256> jsonResponse;

@@ -77,6 +77,8 @@ public:
   std::vector<int> readBytes(std::vector<int> bytes);
 
   void scrollText(std::string text, int delayTime = 30, uint8_t brightness = 255, uint8_t fontid = 0);
+  // Giant text: the system font drawn at double size (10x14), using the full panel height.
+  void scrollTextBig(std::string text, int delayTime = 30, uint8_t brightness = 255);
   void scrollGraph(std::vector<int> graph = {}, int miny = 0, int maxy = 15, int delayTime = 60, uint8_t brightness = 255);
 };
 
